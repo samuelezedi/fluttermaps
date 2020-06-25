@@ -50,11 +50,64 @@ class _MapViewState extends State<MapView> {
 
   final startAddressController = TextEditingController();
 
+
+  Set<Marker> markers = {};
+
+  Position startCoordinates;
+  Position destinationCoordinates;
+
+
+
+
+
+  getPlacemarks() async {
+    List<Placemark> startPlacemark =
+    await _geolocator.placemarkFromAddress(_startAddress);
+    List<Placemark> destinationPlacemark =
+    await _geolocator.placemarkFromAddress(_destinationAddress);
+
+// Retrieving coordinates
+    startCoordinates = startPlacemark[0].position;
+    destinationCoordinates = destinationPlacemark[0].position;
+
+    // Start Location Marker
+    Marker startMarker = Marker(
+      markerId: MarkerId('$startCoordinates'),
+      position: LatLng(
+        startCoordinates.latitude,
+        startCoordinates.longitude,
+      ),
+      infoWindow: InfoWindow(
+        title: 'Start',
+        snippet: _startAddress,
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+    );
+
+// Destination Location Marker
+    Marker destinationMarker = Marker(
+      markerId: MarkerId('$destinationCoordinates'),
+      position: LatLng(
+        destinationCoordinates.latitude,
+        destinationCoordinates.longitude,
+      ),
+      infoWindow: InfoWindow(
+        title: 'Destination',
+        snippet: _destinationAddress,
+      ),
+      icon: BitmapDescriptor.defaultMarker,
+    );
+
+    markers.add(startMarker);
+    markers.add(destinationMarker);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _getCurrentLocation();
+    getPlacemarks();
   }
 
   @override
@@ -72,6 +125,7 @@ class _MapViewState extends State<MapView> {
           body: Stack(
             children: <Widget>[
               GoogleMap(
+                markers: markers != null ? Set<Marker>.from(markers) : null,
                 initialCameraPosition: _initialLocation,
                 myLocationEnabled: true,
                 myLocationButtonEnabled: false,
