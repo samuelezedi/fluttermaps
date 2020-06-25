@@ -49,6 +49,7 @@ class _MapViewState extends State<MapView> {
   String _placeDistance;
 
   final startAddressController = TextEditingController();
+  final destinationAddressController = TextEditingController();
 
 
   Set<Marker> markers = {};
@@ -136,6 +137,50 @@ class _MapViewState extends State<MapView> {
                   mapController = controller;
                 },
               ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(15)
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+
+                      Text('Places',style: TextStyle(fontSize: 20),),
+                      _textField(
+                          controller: startAddressController,
+                          prefixIcon: Icon(Icons.looks_one),
+                          suffixIcon: Icon(Icons.my_location),
+                          width: width,
+                          label: 'Start'
+                      ),
+                      SizedBox(height: 5,),
+                      _textField(
+                          controller: destinationAddressController,
+                          prefixIcon: Icon(Icons.looks_two),
+                          width: width,
+                          label: 'Destination'
+                      ),
+                      SizedBox(height: 5,),
+                      RaisedButton(
+                        onPressed: (){
+
+                        },
+                        child: Text('SHOW ROUTE',style: TextStyle(color: Colors.white),),
+                        color: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
