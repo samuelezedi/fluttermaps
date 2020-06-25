@@ -92,4 +92,19 @@ class _MapViewState extends State<MapView> {
       ),
     );
   }
+
+  void moveCamera() {
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: LatLng(
+            // Will be fetching in the next step
+            _currentPosition.latitude,
+            _currentPosition.longitude,
+          ),
+          zoom: 18.0,
+        ),
+      ),
+    );
+  }
 }
