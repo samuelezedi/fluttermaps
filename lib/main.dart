@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 void main() {
@@ -36,6 +37,18 @@ class _MapViewState extends State<MapView> {
   // For controlling the view of the Map
   GoogleMapController mapController;
 
+  final Geolocator _geolocator = Geolocator();
+
+  // For storing the current position
+  Position _currentPosition;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getCurrentLocation();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -61,30 +74,90 @@ class _MapViewState extends State<MapView> {
                   mapController = controller;
                 },
               ),
-              ClipOval(
-                child: Material(
-                  color: Colors.orange[100], // button color
-                  child: InkWell(
-                    splashColor: Colors.orange, // inkwell color
-                    child: SizedBox(
-                      width: 56,
-                      height: 56,
-                      child: Icon(Icons.my_location),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  ClipOval(
+                    child: Material(
+                      color: Colors.orange[100], // button color
+                      child: InkWell(
+                        splashColor: Colors.orange, // inkwell color
+                        child: SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: Icon(Icons.my_location),
+                        ),
+                        onTap: () {
+                          mapController.animateCamera(
+                            CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(
+                                  // Will be fetching in the next step
+                                  _currentPosition.latitude,
+                                  _currentPosition.longitude,
+                                ),
+                                zoom: 18.0,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                    onTap: () {
-                      // TODO: Add the operation to be performed
-                      // on button tap
-                      mapController.animateCamera(
-                        CameraUpdate.zoomIn(),
-                      );
-                    },
-                    onDoubleTap: () {
-                      mapController.animateCamera(
-                        CameraUpdate.zoomOut(),
-                      );
-                    },
                   ),
-                ),
+
+                  SizedBox(
+                    height: 10,
+                  ),
+
+                  ClipOval(
+                    child: Material(
+                      color: Colors.blue[300], // button color
+                      child: InkWell(
+                        splashColor: Colors.blue, // inkwell color
+                        child: SizedBox(
+                          width: 46,
+                          height: 46,
+                          child: Icon(Icons.add,color: Colors.white,),
+                        ),
+                        onTap: () {
+                          // TODO: Add the operation to be performed
+                          // on button tap
+                          mapController.animateCamera(
+                            CameraUpdate.zoomIn(),
+                          );
+                        },
+
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    height: 10,
+                  ),
+
+                  ClipOval(
+                    child: Material(
+                      color: Colors.blue[300], // button color
+                      child: InkWell(
+                        splashColor: Colors.blue, // inkwell color
+                        child: SizedBox(
+                          width: 46,
+                          height: 46,
+                          child: Icon(Icons.remove,color: Colors.white,),
+                        ),
+                        onTap: () {
+                          // TODO: Add the operation to be performed
+                          // on button tap
+                          mapController.animateCamera(
+                            CameraUpdate.zoomOut(),
+                          );
+                        },
+
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -93,18 +166,29 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-  void moveCamera() {
-    mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: LatLng(
-            // Will be fetching in the next step
-            _currentPosition.latitude,
-            _currentPosition.longitude,
-          ),
-          zoom: 18.0,
-        ),
-      ),
-    );
+  _getCurrentLocation() async {
+    await _geolocator.
+      getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position){
+
+          setState(() {
+            _currentPosition = position;
+
+            print('Current Pos: $_currentPosition');
+
+            // For moving the camera to current Location
+            mapController.animateCamera(
+              CameraUpdate.newCameraPosition(
+                CameraPosition(
+                  target: LatLng(position.latitude, position.longitude),
+                  zoom: 18.0,
+                ),
+              ),
+            );
+          });
+
+    }).catchError((e){
+      print(e);
+    });
   }
 }
