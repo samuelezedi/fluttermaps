@@ -42,6 +42,12 @@ class _MapViewState extends State<MapView> {
   // For storing the current position
   Position _currentPosition;
 
+  String _currentAddress;
+
+  String _startAddress = '';
+  String _destinationAddress = '';
+  String _placeDistance;
+
   final startAddressController = TextEditingController();
 
   @override
@@ -241,5 +247,31 @@ class _MapViewState extends State<MapView> {
         ),
       ),
     );
+  }
+
+  _getAddress() async {
+    try {
+      // Places are retrieved using the coordinates
+      List<Placemark> p = await _geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      // Taking the most probable result
+      Placemark place = p[0];
+
+      setState(() {
+
+        // Structuring the address
+        _currentAddress =
+        "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
+
+        // Update the text of the TextField
+        startAddressController.text = _currentAddress;
+
+        // Setting the user's present location as the starting address
+        _startAddress = _currentAddress;
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 }
