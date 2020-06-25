@@ -108,6 +108,7 @@ class _MapViewState extends State<MapView> {
     // TODO: implement initState
     super.initState();
     _getCurrentLocation();
+    _getAddress();
     getPlacemarks();
   }
 
