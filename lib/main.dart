@@ -43,24 +43,51 @@ class _MapViewState extends State<MapView> {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.height;
 
-    return Container(
-      height: height,
-      width: width,
-      child: Scaffold(
-        body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              initialCameraPosition: _initialLocation,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: false,
-              mapType: MapType.normal,
-              zoomGesturesEnabled: true,
-              zoomControlsEnabled: false,
-              onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
-              },
-            ),
-          ],
+    return SafeArea(
+      child: Container(
+        height: height,
+        width: width,
+        child: Scaffold(
+          body: Stack(
+            children: <Widget>[
+              GoogleMap(
+                initialCameraPosition: _initialLocation,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: false,
+                mapType: MapType.normal,
+                zoomGesturesEnabled: true,
+                zoomControlsEnabled: false,
+                onMapCreated: (GoogleMapController controller) {
+                  mapController = controller;
+                },
+              ),
+              ClipOval(
+                child: Material(
+                  color: Colors.orange[100], // button color
+                  child: InkWell(
+                    splashColor: Colors.orange, // inkwell color
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Icon(Icons.my_location),
+                    ),
+                    onTap: () {
+                      // TODO: Add the operation to be performed
+                      // on button tap
+                      mapController.animateCamera(
+                        CameraUpdate.zoomIn(),
+                      );
+                    },
+                    onDoubleTap: () {
+                      mapController.animateCamera(
+                        CameraUpdate.zoomOut(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
